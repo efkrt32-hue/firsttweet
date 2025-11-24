@@ -15,7 +15,7 @@ button { background:black; color:white; border:none; }
 
 <div class="container">
 <h2>First Tweet Finder</h2>
-<p>Aramak istediğin kelimeyi yaz → En eski tweet yılını bulayım.</p>
+<p>Kelimeyi yaz → Ben de X üzerinde en eski yıl aralığını açayım.</p>
 
 <input id="keyword" placeholder="ör: araba">
 <button onclick="start()">Ara</button>
@@ -24,43 +24,24 @@ button { background:black; color:white; border:none; }
 </div>
 
 <script>
-async function checkTweets(keyword, since, until) {
-
-    const url =
-      "https://corsproxy.io/?" +
-      encodeURIComponent(`https://x.com/search?q=${encodeURIComponent(keyword)} since:${since} until:${until}&src=typed_query&f=live`);
-
-    const html = await fetch(url).then(r => r.text());
-
-    // X'in yeni mobil HTML tweet işaretleyicisi
-    return html.includes("data-testid=\"tweetText\"");
+function openYear(keyword, year) {
+    const url = `https://x.com/search?q=${encodeURIComponent(keyword)} since:${year}-01-01 until:${year}-12-31&src=typed_query&f=live`;
+    window.open(url, "_blank");
 }
 
 async function start() {
     const keyword = document.getElementById("keyword").value.trim();
     const log = document.getElementById("log");
-    log.textContent = "Arama başladı...\n";
+    log.textContent = "X üzerinde yıllar açılıyor...\n\n";
 
-    let startYear = 2006;
-    let endYear = new Date().getFullYear();
+    let year = 2006;
 
-    while (startYear <= endYear) {
-        const mid = Math.floor((startYear + endYear) / 2);
-        log.textContent += `Yıl taranıyor: ${mid}\n`;
-
-        try {
-            let found = await checkTweets(keyword, `${mid}-01-01`, `${mid}-12-31`);
-
-            if (found) endYear = mid - 1;
-            else startYear = mid + 1;
-
-        } catch(err) {
-            log.textContent += "Hata: Tekrar deniyorum...\n";
-        }
-    }
-
-    log.textContent += `\nEn eski tweet yılı: ${startYear}\n\n`;
-    log.textContent += `Link:\nhttps://x.com/search?q=${encodeURIComponent(keyword)} since:${startYear}-01-01&src=typed_query&f=live`;
+    const interval = setInterval(() => {
+        log.textContent += year + " açılıyor...\n";
+        openYear(keyword, year);
+        year++;
+        if (year > new Date().getFullYear()) clearInterval(interval);
+    }, 1200);
 }
 </script>
 
