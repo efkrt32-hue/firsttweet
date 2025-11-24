@@ -17,7 +17,7 @@ button { background:black; color:white; border:none; }
 <h2>First Tweet Finder</h2>
 <p>Aramak istediğin kelimeyi yaz → En eski tweet yılını bulayım.</p>
 
-<input id="keyword" placeholder="ör: salata">
+<input id="keyword" placeholder="ör: araba">
 <button onclick="start()">Ara</button>
 
 <div id="log"></div>
@@ -25,10 +25,15 @@ button { background:black; color:white; border:none; }
 
 <script>
 async function checkTweets(keyword, since, until) {
-    const query = `https://x.com/search?q=${encodeURIComponent(keyword)} since:${since} until:${until}&src=typed_query&f=live`;
-    const proxy = "https://api.allorigins.win/raw?url=" + encodeURIComponent(query);
-    const html = await fetch(proxy).then(r => r.text());
-    return html.includes("data-testid=\"tweet\"");
+
+    const url =
+      "https://corsproxy.io/?" +
+      encodeURIComponent(`https://x.com/search?q=${encodeURIComponent(keyword)} since:${since} until:${until}&src=typed_query&f=live`);
+
+    const html = await fetch(url).then(r => r.text());
+
+    // X'in yeni mobil HTML tweet işaretleyicisi
+    return html.includes("data-testid=\"tweetText\"");
 }
 
 async function start() {
@@ -43,10 +48,15 @@ async function start() {
         const mid = Math.floor((startYear + endYear) / 2);
         log.textContent += `Yıl taranıyor: ${mid}\n`;
 
-        let found = await checkTweets(keyword, `${mid}-01-01`, `${mid}-12-31`);
+        try {
+            let found = await checkTweets(keyword, `${mid}-01-01`, `${mid}-12-31`);
 
-        if (found) endYear = mid - 1;
-        else startYear = mid + 1;
+            if (found) endYear = mid - 1;
+            else startYear = mid + 1;
+
+        } catch(err) {
+            log.textContent += "Hata: Tekrar deniyorum...\n";
+        }
     }
 
     log.textContent += `\nEn eski tweet yılı: ${startYear}\n\n`;
