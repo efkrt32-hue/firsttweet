@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<title>First Tweet Finder - Auto</title>
+<title>First Tweet Finder - Manual Fast</title>
 <style>
 body { font-family: Arial; padding: 20px; background:#f0f0f0; }
 .container { max-width: 600px; margin:auto; background:white; padding:20px; border-radius:12px;
@@ -15,49 +15,36 @@ button { background:black; color:white; border:none; }
 <body>
 
 <div class="container">
-<h2>First Tweet Finder (Tam Otomatik)</h2>
-<p>Kelimeyi yaz → Başlat → Sistem tüm yılları kendi kendine tarasın.</p>
+<h2>First Tweet Finder (Yönlendirmeli)</h2>
+<p>Aramak istediğin kelimeyi yaz → Sonra “Sonraki Yılı Aç” butonuna bas.</p>
 
 <input id="keyword" placeholder="ör: araba">
 
 <div id="yearBox">Başlangıç yılı: 2006</div>
 
-<button onclick="startSearch()">Başlat</button>
+<button onclick="nextYear()">Sonraki Yılı Aç</button>
 
 <p style="margin-top:20px; font-size:14px;">
-Sistem X üzerinde yılları tek tek açıp, tweetleri otomatik tarayacak.  
-Hiçbir şeye dokunmana gerek yok.
+Her tıklamada seni o yılın X aramasına yönlendireceğim.  
+Tweet çıkan ilk yıl = en eski tweet yılı.
 </p>
 
 </div>
 
 <script>
 let year = 2006;
-let keyword = "";
-
-function startSearch() {
-    keyword = document.getElementById("keyword").value.trim();
-    if (!keyword) return alert("Kelime gir.");
-
-    nextYear();
-}
 
 function nextYear() {
-    const url =
-      `https://x.com/search?q=${encodeURIComponent(keyword)} since:${year}-01-01 until:${year}-12-31&src=typed_query&f=live#tweetbot`;
+    const keyword = document.getElementById("keyword").value.trim();
+    if (!keyword) return alert("Kelime gir.");
 
-    window.location.href = url;
+    const url = `https://x.com/search?q=${encodeURIComponent(keyword)} since:${year}-01-01 until:${year}-12-31&src=typed_query&f=live`;
+
+    window.location.href = url;  // seni X’e yönlendirecek
 
     year++;
+    document.getElementById("yearBox").textContent = "Şu anki yıl: " + year;
 }
-
-window.onload = function() {
-    if (window.location.hash === "#tweetbot") {
-        const script = document.createElement("script");
-        script.src = "https://efkrt32-hue.github.io/firsttweet/tweetbot.js";
-        document.body.appendChild(script);
-    }
-};
 </script>
 
 </body>
