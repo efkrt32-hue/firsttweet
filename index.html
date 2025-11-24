@@ -1,47 +1,49 @@
 <!DOCTYPE html>
-<html>
+<html lang="tr">
 <head>
 <meta charset="UTF-8">
-<title>First Tweet Finder</title>
+<title>First Tweet Finder - Manual Fast</title>
 <style>
-body { font-family: Arial; padding: 20px; background:#f5f5f5; }
-input, button { padding: 12px; font-size: 16px; width: 100%; margin-top: 10px; border-radius:8px; border:1px solid #ccc; }
-#log { margin-top: 20px; font-size: 14px; white-space: pre-wrap; }
-.container { max-width: 600px; margin:auto; background:white; padding:20px; border-radius:12px; box-shadow:0 0 12px rgba(0,0,0,0.1); }
+body { font-family: Arial; padding: 20px; background:#f0f0f0; }
+.container { max-width: 600px; margin:auto; background:white; padding:20px; border-radius:12px;
+box-shadow:0 0 12px rgba(0,0,0,0.1); }
+input, button { width:100%; padding:12px; margin-top:10px; font-size:16px; border-radius:8px; border:1px solid #ccc; }
 button { background:black; color:white; border:none; }
+#yearBox { font-size:18px; margin-top:20px; text-align:center; }
 </style>
 </head>
 <body>
 
 <div class="container">
-<h2>First Tweet Finder</h2>
-<p>Kelimeyi yaz → Ben de X üzerinde en eski yıl aralığını açayım.</p>
+<h2>First Tweet Finder (Yönlendirmeli)</h2>
+<p>Aramak istediğin kelimeyi yaz → Sonra “Sonraki Yılı Aç” butonuna bas.</p>
 
 <input id="keyword" placeholder="ör: araba">
-<button onclick="start()">Ara</button>
 
-<div id="log"></div>
+<div id="yearBox">Başlangıç yılı: 2006</div>
+
+<button onclick="nextYear()">Sonraki Yılı Aç</button>
+
+<p style="margin-top:20px; font-size:14px;">
+Her tıklamada seni o yılın X aramasına yönlendireceğim.  
+Tweet çıkan ilk yıl = en eski tweet yılı.
+</p>
+
 </div>
 
 <script>
-function openYear(keyword, year) {
-    const url = `https://x.com/search?q=${encodeURIComponent(keyword)} since:${year}-01-01 until:${year}-12-31&src=typed_query&f=live`;
-    window.open(url, "_blank");
-}
+let year = 2006;
 
-async function start() {
+function nextYear() {
     const keyword = document.getElementById("keyword").value.trim();
-    const log = document.getElementById("log");
-    log.textContent = "X üzerinde yıllar açılıyor...\n\n";
+    if (!keyword) return alert("Kelime gir.");
 
-    let year = 2006;
+    const url = `https://x.com/search?q=${encodeURIComponent(keyword)} since:${year}-01-01 until:${year}-12-31&src=typed_query&f=live`;
 
-    const interval = setInterval(() => {
-        log.textContent += year + " açılıyor...\n";
-        openYear(keyword, year);
-        year++;
-        if (year > new Date().getFullYear()) clearInterval(interval);
-    }, 1200);
+    window.location.href = url;  // seni X’e yönlendirecek
+
+    year++;
+    document.getElementById("yearBox").textContent = "Şu anki yıl: " + year;
 }
 </script>
 
